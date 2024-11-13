@@ -1,17 +1,21 @@
 from fastapi import APIRouter
 
+from src.auth.schemas import UserLoginInput, UserLoginOutput
+
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
-@router.post("/login")
-def login() -> dict[str, str]:
+@router.post("/login", response_model=UserLoginOutput)
+def login(user: UserLoginInput) -> UserLoginOutput:
     """
     Logs in the user
 
     Returns
     -------
-    dict[str, str]
-        Log in response
+    UserLoginOutput
+        The user email and token
     """
 
-    return {"description": "Login successful"}
+    response = UserLoginOutput(email=user.email, token="token")
+
+    return response
