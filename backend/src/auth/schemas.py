@@ -1,19 +1,10 @@
 from pydantic import BaseModel
 
 
-class UserLoginInput(BaseModel):
+class TokenOutput(BaseModel):
     """
-    User login input schema
-    """
-
-    email: str
-    password: str
-
-
-class UserLoginOutput(BaseModel):
-    """
-    User login output schema
+    Token output schema
     """
 
-    email: str
-    token: str
+    access_token: str
+    token_type: str = "bearer"
