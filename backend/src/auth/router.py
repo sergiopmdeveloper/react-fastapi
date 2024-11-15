@@ -8,7 +8,7 @@ from sqlmodel import Session, select
 from src.auth.models import User
 from src.auth.schemas import TokenOutput
 from src.auth.utils import HashHandler, JWTHandler
-from src.database import engine
+from src.dependencies import get_session
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -17,6 +17,8 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/generate-token")
 
 @router.post("/generate-token", response_model=TokenOutput)
 def login(
+    *,
+    session: Session = Depends(get_session),
     user_credentials: Annotated[OAuth2PasswordRequestForm, Depends()]
 ) -> TokenOutput:
     """
@@ -35,10 +37,9 @@ def login(
 
     INVALID_CREDENTIALS_ERROR_MSG = "Incorrect email or password"
 
-    with Session(engine) as session:
-        statement = select(User).where(User.email == user_credentials.username)
-        results = session.exec(statement)
-        user = results.first()
+    statement = select(User).where(User.email == user_credentials.username)
+    results = session.exec(statement)
+    user = results.first()
 
     if not user:
         raise HTTPException(status_code=400, detail=INVALID_CREDENTIALS_ERROR_MSG)
