@@ -44,8 +44,6 @@ class JWTHandler:
 
     Attributes
     ----------
-    __SECRET_KEY : str
-        The secret key for the token
     __ALGORITHM : str
         The algorithm to use for the token
     __ACCESS_TOKEN_EXPIRE_MINUTES : int
@@ -57,7 +55,6 @@ class JWTHandler:
         Generates a token
     """
 
-    __SECRET_KEY = os.getenv("SECRET_KEY")
     __ALGORITHM = "HS256"
     __ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24
 
@@ -87,7 +84,7 @@ class JWTHandler:
 
         token = jwt.encode(
             data_copy,
-            cls.__SECRET_KEY,
+            os.getenv("SECRET_KEY"),
             algorithm=cls.__ALGORITHM,
         )
 
