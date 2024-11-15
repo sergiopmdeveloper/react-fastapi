@@ -7,7 +7,7 @@ from sqlmodel import Session, select
 
 from src.auth.models import User
 from src.auth.schemas import TokenOutput
-from src.auth.utils import HashHandler
+from src.auth.utils import HashHandler, JWTHandler
 from src.database import engine
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -16,7 +16,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/generate-token")
 
 
 @router.post("/generate-token", response_model=TokenOutput)
-def generate_token(
+def login(
     user_credentials: Annotated[OAuth2PasswordRequestForm, Depends()]
 ) -> TokenOutput:
     """
@@ -26,7 +26,14 @@ def generate_token(
     -------
     TokenOutput
         The generated token
+
+    Raises
+    ------
+    HTTPException
+        If the user credentials are invalid
     """
+
+    INVALID_CREDENTIALS_ERROR_MSG = "Incorrect email or password"
 
     with Session(engine) as session:
         statement = select(User).where(User.email == user_credentials.username)
@@ -34,11 +41,13 @@ def generate_token(
         user = results.first()
 
     if not user:
-        raise HTTPException(status_code=400, detail="Incorrect email or password")
+        raise HTTPException(status_code=400, detail=INVALID_CREDENTIALS_ERROR_MSG)
 
     if user.password != HashHandler.hash(user_credentials.password):
-        raise HTTPException(status_code=400, detail="Incorrect email or password")
+        raise HTTPException(status_code=400, detail=INVALID_CREDENTIALS_ERROR_MSG)
 
-    response = TokenOutput(access_token="token")
+    response = TokenOutput(
+        access_token=JWTHandler.generate_token({"sub": user.id}),
+    )
 
     return response
