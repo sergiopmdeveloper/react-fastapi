@@ -38,7 +38,7 @@ def root() -> RedirectResponse:
     Returns
     -------
     RedirectResponse
-        Redirection to the /docs endpoint
+        The redirection to the /docs endpoint
     """
 
     return RedirectResponse(url="/docs")

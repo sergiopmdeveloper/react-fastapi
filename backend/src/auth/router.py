@@ -24,6 +24,13 @@ def login(
     """
     Generates a token for the user
 
+    Parameters
+    ----------
+    session : Session
+        The database session
+    user_credentials : OAuth2PasswordRequestForm
+        The user credentials
+
     Returns
     -------
     TokenOutput

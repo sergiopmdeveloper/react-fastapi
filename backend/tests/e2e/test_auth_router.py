@@ -27,7 +27,8 @@ def test_login_success(monkeypatch, session: Session, client: TestClient):
     """
     Tests the login endpoint with valid credentials
     and checks if the response status code is 200
-    and if the response contains the bearer token
+    and if the response contains the access token
+    and if the token type is bearer
     """
 
     monkeypatch.setenv("SECRET_KEY", "secret")

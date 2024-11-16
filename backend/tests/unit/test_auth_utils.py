@@ -7,7 +7,8 @@ from src.auth.utils import HashHandler, JWTHandler
 def test_hash_handler_hash():
     """
     Tests the HashHandler.hash method
-    and checks if it hashes the data
+    and checks if the sha256.update method is called with the correct argument
+    and if the sha256.hexdigest method is called
     """
 
     with patch("src.auth.utils.hashlib.sha256") as mock_sha256:
@@ -20,7 +21,7 @@ def test_hash_handler_hash():
 def test_jwt_handler_generate_token(monkeypatch):
     """
     Tests the JWTHandler.generate_token method
-    and checks if it generates a token
+    and checks if the jwt.encode method is called with the correct arguments
     """
 
     monkeypatch.setenv("SECRET_KEY", "secret")

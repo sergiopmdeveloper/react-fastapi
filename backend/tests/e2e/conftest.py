@@ -49,7 +49,7 @@ def client_fixture(session: Session) -> Generator[TestClient, None, None]:
 
     def get_session_override() -> Session:
         """
-        Gets a session to override the dependency
+        Gets a session to override the app dependency
         """
 
         return session
