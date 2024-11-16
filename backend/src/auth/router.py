@@ -55,7 +55,7 @@ def login(
         raise HTTPException(status_code=400, detail=INVALID_CREDENTIALS_ERROR_MSG)
 
     response = TokenOutput(
-        access_token=JWTHandler.generate_token({"sub": user.id}),
+        access_token=JWTHandler.generate_token({"sub": user.id.__str__()}),
     )
 
     return response
