@@ -1,5 +1,5 @@
+import LoginPage from '@/pages/login';
 import { createBrowserRouter } from 'react-router-dom';
-import LoginPage from './pages/login';
 
 const routes = [
   {
