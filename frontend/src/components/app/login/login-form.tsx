@@ -13,6 +13,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
+/**
+ * Login form schema
+ */
 const loginFormSchema = z.object({
   email: z
     .string()
@@ -24,6 +27,9 @@ const loginFormSchema = z.object({
     .min(8, 'Password must be at least 8 characters'),
 });
 
+/**
+ * Login form component
+ */
 export function LoginForm() {
   const form = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
