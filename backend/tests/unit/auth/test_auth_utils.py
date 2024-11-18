@@ -14,8 +14,8 @@ def test_hash_handler_hash():
     with patch("src.auth.utils.hashlib.sha256") as mock_sha256:
         HashHandler.hash("password")
 
-    mock_sha256.return_value.update.assert_called_with(b"password")
-    mock_sha256.return_value.hexdigest.assert_called()
+    mock_sha256.return_value.update.assert_called_once_with(b"password")
+    mock_sha256.return_value.hexdigest.assert_called_once()
 
 
 def test_jwt_handler_generate_token(monkeypatch):
@@ -33,7 +33,7 @@ def test_jwt_handler_generate_token(monkeypatch):
         mock_datetime.now.return_value = datetime(2024, 1, 1)
         JWTHandler.generate_token({"sub": 1})
 
-    mock_jwt.encode.assert_called_with(
+    mock_jwt.encode.assert_called_once_with(
         {"sub": 1, "exp": datetime(2024, 1, 1) + timedelta(minutes=60 * 24)},
         "secret",
         algorithm="HS256",

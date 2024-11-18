@@ -11,8 +11,10 @@ from src.database import create_db_and_tables
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncGenerator[None, None]:
     """
-    Context manager that creates the database
-    and tables when the application starts
+    App lifetime context manager that executes the following steps:
+
+    On startup:
+    - Creates the database and tables
 
     Parameters
     ----------
@@ -25,9 +27,24 @@ async def lifespan(_: FastAPI) -> AsyncGenerator[None, None]:
     yield
 
 
-app = FastAPI(lifespan=lifespan)
+def init_app() -> FastAPI:
+    """
+    Initializes the app
 
-app.include_router(auth_router)
+    Returns
+    -------
+    FastAPI
+        The app
+    """
+
+    app = FastAPI(lifespan=lifespan)
+
+    app.include_router(auth_router)
+
+    return app
+
+
+app = init_app()
 
 
 @app.get("/")

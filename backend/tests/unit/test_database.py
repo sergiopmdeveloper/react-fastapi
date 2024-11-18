@@ -8,7 +8,7 @@ from src.database import create_db_and_tables
 def test_create_db_and_tables(engine: Engine):
     """
     Tests the create_db_and_tables function
-    and checks if the metadata.create_all method is called with the provided engine
+    and checks if the sqlmodel.metadata.create_all method is called once with the provided engine
     """
 
     with (
@@ -17,4 +17,4 @@ def test_create_db_and_tables(engine: Engine):
     ):
         create_db_and_tables()
 
-    mock_sqlmodel.metadata.create_all.assert_called_with(engine)
+    mock_sqlmodel.metadata.create_all.assert_called_once_with(engine)
