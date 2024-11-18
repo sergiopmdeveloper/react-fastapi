@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/button';
+import { LoginForm } from '@/components/app/login/login-form';
 
 /**
  * Login page
@@ -6,8 +6,9 @@ import { Button } from '@/components/ui/button';
 export default function LoginPage() {
   return (
     <main>
-      <h1>Sign in page</h1>
-      <Button>Shadcn/ui working</Button>
+      <section className="flex h-screen w-full items-center justify-center">
+        <LoginForm />
+      </section>
     </main>
   );
 }
