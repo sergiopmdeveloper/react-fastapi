@@ -27,6 +27,7 @@ def test_login_success(monkeypatch, session: Session, client: TestClient):
     """
     Tests the login endpoint with valid credentials
     and checks if the response status code is 200
+    and if the returned user id is correct
     and if the response contains the access token
     and if the token type is bearer
     """
@@ -50,5 +51,6 @@ def test_login_success(monkeypatch, session: Session, client: TestClient):
     data = response.json()
 
     assert response.status_code == 200
+    assert data["user_id"] == user.id.__str__()
     assert "access_token" in data
     assert data["token_type"] == "bearer"

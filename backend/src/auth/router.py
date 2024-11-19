@@ -6,7 +6,7 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlmodel import Session, select
 
 from src.auth.models import User
-from src.auth.schemas import TokenOutput
+from src.auth.schemas import LoginOutput
 from src.auth.utils import HashHandler, JWTHandler
 from src.dependencies import get_session
 
@@ -15,12 +15,12 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/generate-token")
 
 
-@router.post("/generate-token", response_model=TokenOutput)
+@router.post("/generate-token", response_model=LoginOutput)
 def login(
     *,
     session: Session = Depends(get_session),
     user_credentials: Annotated[OAuth2PasswordRequestForm, Depends()]
-) -> TokenOutput:
+) -> LoginOutput:
     """
     Generates a token for the user
 
@@ -33,8 +33,8 @@ def login(
 
     Returns
     -------
-    TokenOutput
-        The generated token
+    LoginOutput
+        The user id and the access token
 
     Raises
     ------
@@ -54,8 +54,11 @@ def login(
     if user.password != HashHandler.hash(user_credentials.password):
         raise HTTPException(status_code=400, detail=INVALID_CREDENTIALS_ERROR_MSG)
 
-    response = TokenOutput(
-        access_token=JWTHandler.generate_token({"sub": user.id.__str__()}),
+    user_id = user.id.__str__()
+
+    response = LoginOutput(
+        user_id=user_id,
+        access_token=JWTHandler.generate_token({"sub": user_id}),
     )
 
     return response

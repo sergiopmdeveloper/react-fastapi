@@ -1,5 +1,6 @@
 from unittest.mock import patch
 
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.testclient import TestClient
 
 from src.auth.router import router as auth_router
@@ -24,6 +25,7 @@ def test_init_app():
     Tests the init_app function
     and checks if the app is created with the lifespan context manager
     and if the app.include_router function is called with the auth_router
+    and if the app.add_middleware function is called with the expected parameters
     """
 
     with patch("src.main.FastAPI") as mock_app:
@@ -31,6 +33,13 @@ def test_init_app():
 
     mock_app.assert_called_once_with(lifespan=lifespan)
     mock_app.return_value.include_router.assert_called_once_with(auth_router)
+    mock_app.return_value.add_middleware.assert_called_once_with(
+        CORSMiddleware,
+        allow_origins=["http://localhost:5173"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 
 def test_root(client: TestClient):
