@@ -9,7 +9,11 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { login } from '@/services/login';
+import { LoginErrorResponse } from '@/types/login';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation } from '@tanstack/react-query';
+import { AxiosError } from 'axios';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -31,6 +35,16 @@ const loginFormSchema = z.object({
  * Login form component
  */
 export function LoginForm() {
+  const { mutate: loginHandler } = useMutation({
+    mutationFn: login,
+    onSuccess: (response) => {
+      console.log(response);
+    },
+    onError: (error: AxiosError<LoginErrorResponse>) => {
+      console.error(error);
+    },
+  });
+
   const form = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
@@ -39,8 +53,12 @@ export function LoginForm() {
     },
   });
 
+  /**
+   * Form submit handler
+   * @param {z.infer<typeof loginFormSchema>} values - Form values
+   */
   function onSubmit(values: z.infer<typeof loginFormSchema>) {
-    console.log(values);
+    loginHandler(values);
   }
 
   return (
