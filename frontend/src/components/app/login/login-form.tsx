@@ -15,6 +15,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
 /**
@@ -35,10 +36,17 @@ const loginFormSchema = z.object({
  * Login form component
  */
 export function LoginForm() {
+  const navigate = useNavigate();
+
   const { mutate: loginHandler } = useMutation({
     mutationFn: login,
     onSuccess: (response) => {
-      console.log(response);
+      const userId = response.data.user_id;
+
+      localStorage.setItem('userId', userId);
+      localStorage.setItem('token', response.data.access_token);
+
+      navigate(`/user/${userId}`);
     },
     onError: (error: AxiosError<LoginErrorResponse>) => {
       console.error(error);

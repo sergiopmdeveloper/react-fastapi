@@ -4,7 +4,8 @@ export type UserCredentials = {
 };
 
 export type LoginSuccessResponse = {
-  token: string;
+  user_id: string;
+  access_token: string;
   token_type: string;
 };
 
