@@ -1,5 +1,6 @@
-from typing import Annotated
+from typing import Annotated, Optional
 
+import jwt
 from fastapi import APIRouter, Depends
 from fastapi.exceptions import HTTPException
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
@@ -62,3 +63,38 @@ def login(
     )
 
     return response
+
+
+@router.post("/validate-token", response_model=bool)
+def validate_session(
+    *, token: str = Depends(oauth2_scheme), user_id: Optional[str] = None
+) -> bool:
+    """
+    Validates the token
+
+    Parameters
+    ----------
+    token : str
+        The token to validate
+    user_id : Optional[str]
+        The user id to validate the token against
+
+    Returns
+    -------
+    bool
+        Whether the token is valid
+    """
+
+    INVALID_TOKEN_ERROR_MSG = "Invalid token"
+
+    try:
+        data = JWTHandler.validate_token(token)
+    except jwt.PyJWTError:
+        raise HTTPException(status_code=401, detail=INVALID_TOKEN_ERROR_MSG)
+    except Exception:
+        raise HTTPException(status_code=520, detail="Unknown error")
+
+    if user_id and data.get("sub") != user_id:
+        raise HTTPException(status_code=401, detail=INVALID_TOKEN_ERROR_MSG)
+
+    return True

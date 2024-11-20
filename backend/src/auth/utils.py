@@ -53,6 +53,8 @@ class JWTHandler:
     -------
     generate_token(data: dict[str, Any]) -> str
         Generates a token
+    validate_token(token: str) -> dict[str, Any]
+        Validates the token and returns the decoded data
     """
 
     __ALGORITHM = "HS256"
@@ -89,3 +91,35 @@ class JWTHandler:
         )
 
         return token
+
+    @classmethod
+    def validate_token(cls, token: str) -> dict[str, Any]:
+        """
+        Validates the token and returns the decoded data
+
+        Parameters
+        ----------
+        token : str
+            The token to validate
+
+        Returns
+        -------
+        dict[str, Any]
+            The decoded data
+
+        Raises
+        ------
+        jwt.PyJWTError
+            If the token is invalid
+        Exception
+            If an unexpected error occurs
+        """
+
+        try:
+            return jwt.decode(
+                token, os.getenv("SECRET_KEY"), algorithms=[cls.__ALGORITHM]
+            )
+        except jwt.PyJWTError as e:
+            raise e
+        except Exception as e:
+            raise e
