@@ -45,9 +45,10 @@ export function LoginForm() {
     mutationFn: login,
     onSuccess: (response) => {
       const userId = response.data.user_id;
+      const accessToken = response.data.access_token;
+      const session = `${userId}:${accessToken}`;
 
-      localStorage.setItem('userId', userId);
-      localStorage.setItem('token', response.data.access_token);
+      localStorage.setItem('session', session);
 
       navigate(`/user/${userId}`);
     },
