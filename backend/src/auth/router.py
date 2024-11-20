@@ -83,6 +83,12 @@ def validate_session(
     -------
     bool
         Whether the token is valid
+
+    Raises
+    ------
+    HTTPException
+        If the token is invalid
+        or if the user id does not match the token
     """
 
     INVALID_TOKEN_ERROR_MSG = "Invalid token"
