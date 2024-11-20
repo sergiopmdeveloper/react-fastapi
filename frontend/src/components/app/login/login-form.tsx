@@ -14,6 +14,8 @@ import { LoginErrorResponse } from '@/types/login';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
+import { Loader2 } from 'lucide-react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
@@ -37,8 +39,9 @@ const loginFormSchema = z.object({
  */
 export function LoginForm() {
   const navigate = useNavigate();
+  const [loginError, setLoginError] = useState<string | undefined>(undefined);
 
-  const { mutate: loginHandler } = useMutation({
+  const { mutate: loginHandler, isPending } = useMutation({
     mutationFn: login,
     onSuccess: (response) => {
       const userId = response.data.user_id;
@@ -49,7 +52,7 @@ export function LoginForm() {
       navigate(`/user/${userId}`);
     },
     onError: (error: AxiosError<LoginErrorResponse>) => {
-      console.error(error);
+      setLoginError(error.response?.data.detail);
     },
   });
 
@@ -70,7 +73,7 @@ export function LoginForm() {
   }
 
   return (
-    <div className="w-[30rem] rounded-md bg-secondary p-6">
+    <div className="relative w-[30rem] rounded-md bg-secondary p-6">
       <h1 className="text-3xl font-bold">Login</h1>
 
       <Form {...form}>
@@ -122,11 +125,18 @@ export function LoginForm() {
             />
           </div>
 
-          <Button className="mt-8" type="submit">
+          <Button className="mt-8 w-full" type="submit" disabled={isPending}>
             Submit
+            {isPending && <Loader2 className="animate-spin" />}
           </Button>
         </form>
       </Form>
+
+      {loginError && (
+        <p className="absolute -top-8 right-0 rounded-md bg-red-200 px-1.5 py-0.5 text-xs text-red-500">
+          {loginError}
+        </p>
+      )}
     </div>
   );
 }
