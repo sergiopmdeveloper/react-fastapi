@@ -1,6 +1,9 @@
 from datetime import datetime, timedelta
 from unittest.mock import patch
 
+import jwt
+import pytest
+
 from src.auth.utils import HashHandler, JWTHandler
 
 
@@ -38,3 +41,31 @@ def test_jwt_handler_generate_token(monkeypatch):
         "secret",
         algorithm="HS256",
     )
+
+
+def test_jwt_handler_validate_token_invalid(monkeypatch):
+    """
+    Tests the JWTHandler.validate_token method with an invalid token
+    and checks if the jwt.decode method raises a jwt.PyJWTError
+    """
+
+    monkeypatch.setenv("SECRET_KEY", "secret")
+
+    with pytest.raises(jwt.PyJWTError):
+        JWTHandler.validate_token("invalid_token")
+
+
+def test_jwt_handler_validate_token_valid(monkeypatch):
+    """
+    Tests the JWTHandler.validate_token method with a valid token
+    and checks if the data is returned correctly
+    and if the "exp" key is in the data
+    """
+
+    monkeypatch.setenv("SECRET_KEY", "secret")
+    token = JWTHandler.generate_token({"sub": 1})
+
+    data = JWTHandler.validate_token(token)
+
+    assert data["sub"] == 1
+    assert "exp" in data
