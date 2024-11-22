@@ -1,4 +1,4 @@
-import ProtectedRoute from '@/components/app/protected-route';
+import { AuthRoute, ProtectedRoute } from '@/components/app/route-wrappers';
 import LoginPage from '@/pages/login';
 import { createBrowserRouter } from 'react-router-dom';
 
@@ -13,8 +13,13 @@ const routes = [
     ],
   },
   {
-    path: '/login',
-    element: <LoginPage />,
+    element: <AuthRoute />,
+    children: [
+      {
+        path: '/login',
+        element: <LoginPage />,
+      },
+    ],
   },
 ];
 
