@@ -3,9 +3,9 @@ import { type LoginSuccessResponse, type UserCredentials } from '@/types/login';
 import axios, { type AxiosResponse } from 'axios';
 
 /**
- * Logs in the user
+ * Service to logs the user in
  * @param {UserCredentials} userCredentials - The user credentials
- * @returns {Promise<AxiosResponse<LoginSuccessResponse>>} The login response
+ * @returns {Promise<AxiosResponse<LoginSuccessResponse>>} The login response containing the token
  */
 export async function login(
   userCredentials: UserCredentials

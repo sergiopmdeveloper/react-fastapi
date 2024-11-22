@@ -3,17 +3,17 @@ import { authAtom } from '@/states/auth';
 import axios from 'axios';
 import { useAtom } from 'jotai';
 
-/**
- * Custom hook to handle authentication
- * @returns {boolean} isAuthenticated - Is user authenticated
- * @returns {string | null} userId - User ID
- * @returns {() => Promise<void>} validateSession - Validate user session function
- */
-export function useAuth(): {
+type Session = {
   isAuthenticated: boolean;
   userId: string | null;
   validateSession: () => Promise<void>;
-} {
+};
+
+/**
+ * Custom hook to handle authentication
+ * @returns {Session} - The session object
+ */
+export function useAuth(): Session {
   const [auth, setAuth] = useAtom(authAtom);
 
   const validateSession = async () => {

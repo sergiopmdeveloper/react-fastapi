@@ -20,9 +20,6 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
-/**
- * Login form schema
- */
 const loginFormSchema = z.object({
   email: z
     .string()
@@ -33,6 +30,8 @@ const loginFormSchema = z.object({
     .min(1, 'Password is required')
     .min(8, 'Password must be at least 8 characters'),
 });
+
+type LoginFormType = z.infer<typeof loginFormSchema>;
 
 /**
  * Login form component
@@ -46,8 +45,8 @@ export function LoginForm() {
     onSuccess: (response) => {
       const userId = response.data.user_id;
       const accessToken = response.data.access_token;
-      const session = `${userId}:${accessToken}`;
 
+      const session = `${userId}:${accessToken}`;
       localStorage.setItem('session', session);
 
       navigate(`/user/${userId}`);
@@ -57,7 +56,7 @@ export function LoginForm() {
     },
   });
 
-  const form = useForm<z.infer<typeof loginFormSchema>>({
+  const form = useForm<LoginFormType>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
       email: '',
@@ -66,10 +65,10 @@ export function LoginForm() {
   });
 
   /**
-   * Form submit handler
-   * @param {z.infer<typeof loginFormSchema>} values - Form values
+   * Login form submit handler
+   * @param {LoginFormType} values - User credentials
    */
-  function onSubmit(values: z.infer<typeof loginFormSchema>) {
+  function onSubmit(values: LoginFormType) {
     loginHandler(values);
   }
 

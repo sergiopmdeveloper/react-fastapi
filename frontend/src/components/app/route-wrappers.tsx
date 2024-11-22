@@ -3,7 +3,8 @@ import { useEffect, useState } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 
 /**
- * Protected route wrapper
+ * Protected route wrapper that redirects
+ * to login page if user is not authenticated
  */
 export function ProtectedRoute() {
   const { validateSession, isAuthenticated } = useAuth();
@@ -26,7 +27,8 @@ export function ProtectedRoute() {
 }
 
 /**
- * Auth route wrapper
+ * Auth route wrapper that redirects
+ * to user profile if user is authenticated
  */
 export function AuthRoute() {
   const { validateSession, isAuthenticated, userId } = useAuth();
