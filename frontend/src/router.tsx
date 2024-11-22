@@ -1,7 +1,17 @@
+import ProtectedRoute from '@/components/app/protected-route';
 import LoginPage from '@/pages/login';
 import { createBrowserRouter } from 'react-router-dom';
 
 const routes = [
+  {
+    element: <ProtectedRoute />,
+    children: [
+      {
+        path: '/user/:user_id',
+        element: <h1>User page</h1>,
+      },
+    ],
+  },
   {
     path: '/login',
     element: <LoginPage />,
