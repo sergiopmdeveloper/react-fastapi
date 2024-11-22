@@ -1,5 +1,6 @@
 import { AuthRoute, ProtectedRoute } from '@/components/app/route-wrappers';
 import LoginPage from '@/pages/login';
+import UserPage from '@/pages/user';
 import { createBrowserRouter } from 'react-router-dom';
 
 const routes = [
@@ -7,8 +8,8 @@ const routes = [
     element: <ProtectedRoute />,
     children: [
       {
-        path: '/user/:user_id',
-        element: <h1>User page</h1>,
+        path: '/user/:userId',
+        element: <UserPage />,
       },
     ],
   },
