@@ -1,24 +1,28 @@
 import { AuthRoute, ProtectedRoute } from '@/middleware';
 import LoginPage from '@/modules/auth/login';
 import UserPage from '@/modules/user';
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, Navigate } from 'react-router-dom';
 
 const ROUTES = [
+  {
+    path: '/auth',
+    element: <Navigate to="/auth/login" replace />,
+  },
+  {
+    element: <AuthRoute />,
+    children: [
+      {
+        path: '/auth/login',
+        element: <LoginPage />,
+      },
+    ],
+  },
   {
     element: <ProtectedRoute />,
     children: [
       {
         path: '/user/:userId',
         element: <UserPage />,
-      },
-    ],
-  },
-  {
-    element: <AuthRoute />,
-    children: [
-      {
-        path: '/login',
-        element: <LoginPage />,
       },
     ],
   },
