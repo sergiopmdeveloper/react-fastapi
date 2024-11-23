@@ -1,9 +1,6 @@
 import { UserLoginSchema } from '@/modules/auth/login/schemas';
 import { login } from '@/modules/auth/login/services';
-import {
-  type LoginResponseError,
-  type UserLoginData,
-} from '@/modules/auth/login/types';
+import { type UserLoginData } from '@/modules/auth/login/types';
 import generateSession from '@/modules/auth/utils';
 import { Button } from '@/shared/components/ui/button';
 import {
@@ -16,6 +13,7 @@ import {
   FormMessage,
 } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
+import { type ResponseError } from '@/shared/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
@@ -41,7 +39,7 @@ export function LoginForm() {
 
       navigate(`/user/${userId}`);
     },
-    onError: (error: AxiosError<LoginResponseError>) => {
+    onError: (error: AxiosError<ResponseError>) => {
       setLoginError(error.response?.data.detail);
     },
   });

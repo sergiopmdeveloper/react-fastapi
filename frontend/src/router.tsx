@@ -18,6 +18,10 @@ const ROUTES = [
     ],
   },
   {
+    path: '/user',
+    element: <Navigate to="/user/redirection" replace />,
+  },
+  {
     element: <ProtectedRoute />,
     children: [
       {

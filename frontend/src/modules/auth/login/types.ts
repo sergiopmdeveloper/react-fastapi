@@ -8,7 +8,3 @@ export type LoginResponseSuccess = {
   access_token: string;
   token_type: string;
 };
-
-export type LoginResponseError = {
-  detail: string;
-};
