@@ -1,9 +1,9 @@
-import { AuthRoute, ProtectedRoute } from '@/components/app/route-wrappers';
-import LoginPage from '@/pages/login';
-import UserPage from '@/pages/user';
+import { AuthRoute, ProtectedRoute } from '@/middleware';
+import LoginPage from '@/modules/auth/login';
+import UserPage from '@/modules/user';
 import { createBrowserRouter } from 'react-router-dom';
 
-const routes = [
+const ROUTES = [
   {
     element: <ProtectedRoute />,
     children: [
@@ -24,7 +24,7 @@ const routes = [
   },
 ];
 
-const config = {
+const ROUTER_CONFIG = {
   future: {
     v7_relativeSplatPath: true,
     v7_fetcherPersist: true,
@@ -34,4 +34,4 @@ const config = {
   },
 };
 
-export const router = createBrowserRouter(routes, { ...config });
+export const router = createBrowserRouter(ROUTES, { ...ROUTER_CONFIG });

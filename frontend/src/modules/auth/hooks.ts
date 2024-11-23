@@ -1,17 +1,12 @@
 import { API_ENDPOINTS } from '@/constants';
-import { authAtom } from '@/states/auth';
+import { authAtom } from '@/modules/auth/states';
+import { type Session } from '@/modules/auth/types';
 import axios from 'axios';
 import { useAtom } from 'jotai';
 
-type Session = {
-  isAuthenticated: boolean;
-  userId: string | null;
-  validateSession: () => Promise<void>;
-};
-
 /**
  * Custom hook to handle authentication
- * @returns {Session} - The session object
+ * @returns {Session} - The session
  */
 export function useAuth(): Session {
   const [auth, setAuth] = useAtom(authAtom);

@@ -1,6 +1,6 @@
+import { useAuth } from '@/modules/auth/hooks';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from './useAuth';
 
 /**
  * Custom hook to validate user ID

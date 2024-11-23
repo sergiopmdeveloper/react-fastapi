@@ -1,4 +1,4 @@
-import useValidateUserId from '@/hooks/useValidateUserId';
+import useValidateUserId from '@/modules/user/hooks';
 import { useParams } from 'react-router-dom';
 
 /**

@@ -1,4 +1,11 @@
-import { Button } from '@/components/ui/button';
+import { UserLoginSchema } from '@/modules/auth/login/schemas';
+import { login } from '@/modules/auth/login/services';
+import {
+  type LoginResponseError,
+  type UserLoginData,
+} from '@/modules/auth/login/types';
+import generateSession from '@/modules/auth/utils';
+import { Button } from '@/shared/components/ui/button';
 import {
   Form,
   FormControl,
@@ -7,10 +14,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { login } from '@/services/login';
-import { LoginErrorResponse } from '@/types/login';
+} from '@/shared/components/ui/form';
+import { Input } from '@/shared/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
@@ -18,20 +23,6 @@ import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import { z } from 'zod';
-
-const loginFormSchema = z.object({
-  email: z
-    .string()
-    .min(1, 'Email is required')
-    .email('Email format is not valid'),
-  password: z
-    .string()
-    .min(1, 'Password is required')
-    .min(8, 'Password must be at least 8 characters'),
-});
-
-type LoginFormType = z.infer<typeof loginFormSchema>;
 
 /**
  * Login form component
@@ -46,18 +37,17 @@ export function LoginForm() {
       const userId = response.data.user_id;
       const accessToken = response.data.access_token;
 
-      const session = `${userId}:${accessToken}`;
-      localStorage.setItem('session', session);
+      generateSession(userId, accessToken);
 
       navigate(`/user/${userId}`);
     },
-    onError: (error: AxiosError<LoginErrorResponse>) => {
+    onError: (error: AxiosError<LoginResponseError>) => {
       setLoginError(error.response?.data.detail);
     },
   });
 
-  const form = useForm<LoginFormType>({
-    resolver: zodResolver(loginFormSchema),
+  const form = useForm<UserLoginData>({
+    resolver: zodResolver(UserLoginSchema),
     defaultValues: {
       email: '',
       password: '',
@@ -66,10 +56,10 @@ export function LoginForm() {
 
   /**
    * Login form submit handler
-   * @param {LoginFormType} values - User credentials
+   * @param {UserLoginData} userLoginData - The user login data
    */
-  function onSubmit(values: LoginFormType) {
-    loginHandler(values);
+  function onSubmit(userLoginData: UserLoginData) {
+    loginHandler(userLoginData);
   }
 
   return (

@@ -2,4 +2,4 @@
 *.json
 
 # Shadcn/ui components
-src/components/ui
+src/shared/components/ui

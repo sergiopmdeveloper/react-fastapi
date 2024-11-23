@@ -1,9 +1,5 @@
+import { type AuthState } from '@/modules/auth/types';
 import { atom } from 'jotai';
-
-export type AuthState = {
-  isAuthenticated: boolean;
-  userId: string | null;
-};
 
 export const authAtom = atom<AuthState>({
   isAuthenticated: false,
