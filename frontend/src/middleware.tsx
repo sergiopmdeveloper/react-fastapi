@@ -1,4 +1,6 @@
-import { useAuth } from '@/modules/auth/hooks';
+import { sessionAtom } from '@/modules/auth/states';
+import { getSessionUserId, validateSession } from '@/modules/auth/utils';
+import { useAtom } from 'jotai';
 import { useEffect, useState } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 
@@ -7,23 +9,30 @@ import { Navigate, Outlet } from 'react-router-dom';
  * to login page if user is not authenticated
  */
 export function ProtectedRoute() {
-  const { validateSession, isAuthenticated } = useAuth();
+  const [loaded, setLoaded] = useState(false);
+  const [session, setSession] = useAtom(sessionAtom);
   const [checked, setChecked] = useState(false);
 
   useEffect(() => {
+    setLoaded(true);
+  }, []);
+
+  useEffect(() => {
     const validateSessionHandler = async () => {
-      await validateSession();
-      setChecked(true);
+      await validateSession(session, setSession);
     };
 
-    validateSessionHandler();
-  }, []);
+    if (loaded) {
+      validateSessionHandler();
+      setChecked(true);
+    }
+  }, [loaded]);
 
   if (!checked) {
     return;
   }
 
-  return isAuthenticated ? <Outlet /> : <Navigate to="/auth/login" replace />;
+  return session ? <Outlet /> : <Navigate to="/auth/login" replace />;
 }
 
 /**
@@ -31,23 +40,31 @@ export function ProtectedRoute() {
  * to user profile if user is authenticated
  */
 export function AuthRoute() {
-  const { validateSession, isAuthenticated, userId } = useAuth();
+  const [loaded, setLoaded] = useState(false);
+  const [session, setSession] = useAtom(sessionAtom);
   const [checked, setChecked] = useState(false);
 
   useEffect(() => {
-    const validateSessionHandler = async () => {
-      await validateSession();
-      setChecked(true);
-    };
-    validateSessionHandler();
+    setLoaded(true);
   }, []);
+
+  useEffect(() => {
+    const validateSessionHandler = async () => {
+      await validateSession(session, setSession);
+    };
+
+    if (loaded) {
+      validateSessionHandler();
+      setChecked(true);
+    }
+  }, [loaded]);
 
   if (!checked) {
     return;
   }
 
-  return isAuthenticated ? (
-    <Navigate to={`/user/${userId}`} replace />
+  return session ? (
+    <Navigate to={`/user/${getSessionUserId(session)}`} replace />
   ) : (
     <Outlet />
   );

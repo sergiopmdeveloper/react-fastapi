@@ -1,7 +1,7 @@
 import { UserLoginSchema } from '@/modules/auth/login/schemas';
 import { login } from '@/modules/auth/login/services';
 import { type UserLoginData } from '@/modules/auth/login/types';
-import generateSession from '@/modules/auth/utils';
+import { sessionAtom } from '@/modules/auth/states';
 import { Button } from '@/shared/components/ui/button';
 import {
   Form,
@@ -17,6 +17,7 @@ import { type ResponseError } from '@/shared/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
+import { useAtom } from 'jotai';
 import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -26,6 +27,7 @@ import { useNavigate } from 'react-router-dom';
  * Login form component
  */
 export function LoginForm() {
+  const [_, setSession] = useAtom(sessionAtom);
   const navigate = useNavigate();
   const [loginError, setLoginError] = useState<string | undefined>(undefined);
 
@@ -35,7 +37,7 @@ export function LoginForm() {
       const userId = response.data.user_id;
       const accessToken = response.data.access_token;
 
-      generateSession(userId, accessToken);
+      setSession(`${userId}:${accessToken}`);
 
       navigate(`/user/${userId}`);
     },
