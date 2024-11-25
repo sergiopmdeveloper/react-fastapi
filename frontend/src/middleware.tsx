@@ -1,7 +1,4 @@
-import { sessionAtom } from '@/modules/auth/states';
-import { getSessionUserId, validateSession } from '@/modules/auth/utils';
-import { useAtom } from 'jotai';
-import { useEffect, useState } from 'react';
+import useAuth from '@/modules/auth/hooks';
 import { Navigate, Outlet } from 'react-router-dom';
 
 /**
@@ -9,26 +6,9 @@ import { Navigate, Outlet } from 'react-router-dom';
  * to login page if user is not authenticated
  */
 export function ProtectedRoute() {
-  const [loaded, setLoaded] = useState(false);
-  const [session, setSession] = useAtom(sessionAtom);
-  const [checked, setChecked] = useState(false);
+  const { session, validatingSession } = useAuth();
 
-  useEffect(() => {
-    setLoaded(true);
-  }, []);
-
-  useEffect(() => {
-    const validateSessionHandler = async () => {
-      await validateSession(session, setSession);
-    };
-
-    if (loaded) {
-      validateSessionHandler();
-      setChecked(true);
-    }
-  }, [loaded]);
-
-  if (!checked) {
+  if (validatingSession) {
     return;
   }
 
@@ -40,32 +20,11 @@ export function ProtectedRoute() {
  * to user profile if user is authenticated
  */
 export function AuthRoute() {
-  const [loaded, setLoaded] = useState(false);
-  const [session, setSession] = useAtom(sessionAtom);
-  const [checked, setChecked] = useState(false);
+  const { session, userId, validatingSession } = useAuth();
 
-  useEffect(() => {
-    setLoaded(true);
-  }, []);
-
-  useEffect(() => {
-    const validateSessionHandler = async () => {
-      await validateSession(session, setSession);
-    };
-
-    if (loaded) {
-      validateSessionHandler();
-      setChecked(true);
-    }
-  }, [loaded]);
-
-  if (!checked) {
+  if (validatingSession) {
     return;
   }
 
-  return session ? (
-    <Navigate to={`/user/${getSessionUserId(session)}`} replace />
-  ) : (
-    <Outlet />
-  );
+  return session ? <Navigate to={`/user/${userId}`} replace /> : <Outlet />;
 }
