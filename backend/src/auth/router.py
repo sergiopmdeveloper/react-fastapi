@@ -66,7 +66,7 @@ def login(
     return response
 
 
-@router.post("/register", response_model=AuthOutput)
+@router.post("/register", response_model=AuthOutput, status_code=201)
 def register(
     *, session: Session = Depends(get_session), user_data: RegisterInput
 ) -> AuthOutput:
