@@ -1,6 +1,5 @@
-# Package files
-package.json
-package-lock.json
-
 # JSON files
 *.json
+
+# Shadcn/ui components
+src/shared/components/ui

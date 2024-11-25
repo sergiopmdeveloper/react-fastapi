@@ -3,3 +3,12 @@ __pycache__
 
 # Development container
 .devcontainer
+
+# Visual Studio Code
+.vscode
+
+# Local database
+db.sqlite3
+
+# Environment variables
+.env

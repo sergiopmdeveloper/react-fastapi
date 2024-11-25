@@ -3,3 +3,6 @@ node_modules
 
 # Development container
 .devcontainer
+
+# Environment variables
+.env
