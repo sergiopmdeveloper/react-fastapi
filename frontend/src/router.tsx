@@ -1,5 +1,6 @@
 import { AuthRoute, ProtectedRoute } from '@/middleware';
 import LoginPage from '@/modules/auth/login';
+import RegisterPage from '@/modules/auth/register';
 import UserPage from '@/modules/user';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 
@@ -14,6 +15,10 @@ const ROUTES = [
       {
         path: '/auth/login',
         element: <LoginPage />,
+      },
+      {
+        path: '/auth/register',
+        element: <RegisterPage />,
       },
     ],
   },
