@@ -1,9 +1,19 @@
 from pydantic import BaseModel
 
 
-class LoginOutput(BaseModel):
+class RegisterInput(BaseModel):
     """
-    Login output schema
+    Register input schema
+    """
+
+    name: str
+    email: str
+    password: str
+
+
+class AuthOutput(BaseModel):
+    """
+    Auth output schema
     """
 
     user_id: str
