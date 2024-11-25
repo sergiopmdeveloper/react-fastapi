@@ -21,7 +21,7 @@ import { useAtom } from 'jotai';
 import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 /**
  * Login form component
@@ -114,6 +114,13 @@ export function LoginForm() {
               )}
             />
           </div>
+
+          <p className="mt-8 text-sm">
+            Don't have an account?{' '}
+            <Link to="/auth/register" className="text-blue-500 underline">
+              Register
+            </Link>
+          </p>
 
           <Button className="mt-8 w-full" type="submit" disabled={isPending}>
             Submit
