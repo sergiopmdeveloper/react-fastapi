@@ -1,5 +1,7 @@
 import { UserRegisterSchema } from '@/modules/auth/register/schemas';
+import { register } from '@/modules/auth/register/services';
 import { UserRegisterData } from '@/modules/auth/register/types';
+import { sessionAtom } from '@/modules/auth/states';
 import { Button } from '@/shared/components/ui/button';
 import {
   Form,
@@ -11,14 +13,41 @@ import {
   FormMessage,
 } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
+import { type ResponseError } from '@/shared/types';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation } from '@tanstack/react-query';
+import { type AxiosError } from 'axios';
+import { useAtom } from 'jotai';
+import { Loader2 } from 'lucide-react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 /**
  * Register form component
  */
 export function RegisterForm() {
+  const [_, setSession] = useAtom(sessionAtom);
+  const navigate = useNavigate();
+  const [registerError, setRegisterError] = useState<string | undefined>(
+    undefined
+  );
+
+  const { mutate: registerHandler, isPending } = useMutation({
+    mutationFn: register,
+    onSuccess: (response) => {
+      const userId = response.data.user_id;
+      const accessToken = response.data.access_token;
+
+      setSession(`${userId}:${accessToken}`);
+
+      navigate(`/user/${userId}`);
+    },
+    onError: (error: AxiosError<ResponseError>) => {
+      setRegisterError(error.response?.data.detail);
+    },
+  });
+
   const form = useForm<UserRegisterData>({
     resolver: zodResolver(UserRegisterSchema),
     defaultValues: {
@@ -33,7 +62,7 @@ export function RegisterForm() {
    * @param {UserRegisterData} userRegisterData - The user register data
    */
   function onSubmit(userRegisterData: UserRegisterData) {
-    console.log(userRegisterData);
+    registerHandler(userRegisterData);
   }
 
   return (
@@ -115,11 +144,18 @@ export function RegisterForm() {
             </Link>
           </p>
 
-          <Button className="mt-8 w-full" type="submit">
+          <Button className="mt-8 w-full" type="submit" disabled={isPending}>
             Submit
+            {isPending && <Loader2 className="animate-spin" />}
           </Button>
         </form>
       </Form>
+
+      {registerError && (
+        <p className="absolute -top-8 right-0 rounded-md bg-red-200 px-1.5 py-0.5 text-xs text-red-500">
+          {registerError}
+        </p>
+      )}
     </div>
   );
 }
