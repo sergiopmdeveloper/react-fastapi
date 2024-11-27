@@ -12,7 +12,11 @@ export function ProtectedRoute() {
     return;
   }
 
-  return session ? <Outlet /> : <Navigate to="/auth/login" replace />;
+  return session ? (
+    <Outlet />
+  ) : (
+    <Navigate to="/auth/login?next=forbidden" replace />
+  );
 }
 
 /**

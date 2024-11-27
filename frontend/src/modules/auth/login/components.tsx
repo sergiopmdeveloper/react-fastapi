@@ -19,9 +19,9 @@ import { useMutation } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { useAtom } from 'jotai';
 import { Loader2 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 /**
  * Login form component
@@ -30,6 +30,10 @@ export function LoginForm() {
   const [_, setSession] = useAtom(sessionAtom);
   const navigate = useNavigate();
   const [loginError, setLoginError] = useState<string | undefined>(undefined);
+  const [forbiddenMessage, setForbiddenMessage] = useState<string | undefined>(
+    undefined
+  );
+  const location = useLocation();
 
   const { mutate: loginHandler, isPending } = useMutation({
     mutationFn: login,
@@ -61,6 +65,23 @@ export function LoginForm() {
   function onSubmit(userLoginData: UserLoginData) {
     loginHandler(userLoginData);
   }
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const next = searchParams.get('next');
+
+    if (next === 'forbidden') {
+      setForbiddenMessage('Login first in your account');
+
+      searchParams.delete('next');
+
+      navigate({ search: searchParams.toString() }, { replace: true });
+
+      setTimeout(() => {
+        setForbiddenMessage(undefined);
+      }, 3000);
+    }
+  }, []);
 
   return (
     <div className="relative w-[30rem] rounded-md border bg-card p-6 shadow">
@@ -132,6 +153,12 @@ export function LoginForm() {
       {loginError && (
         <p className="absolute -top-8 right-0 rounded-md bg-red-200 px-1.5 py-0.5 text-xs text-red-500">
           {loginError}
+        </p>
+      )}
+
+      {forbiddenMessage && (
+        <p className="absolute -top-8 right-0 rounded-md bg-red-200 px-1.5 py-0.5 text-xs text-red-500">
+          {forbiddenMessage}
         </p>
       )}
     </div>
