@@ -63,7 +63,7 @@ export function LoginForm() {
   }
 
   return (
-    <div className="relative w-[30rem] rounded-md bg-secondary p-6">
+    <div className="relative w-[30rem] rounded-md border bg-card p-6 shadow">
       <h1 className="text-3xl font-bold">Login</h1>
 
       <Form {...form}>

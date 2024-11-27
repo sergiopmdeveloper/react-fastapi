@@ -1,4 +1,5 @@
 import useValidateUserId from '@/modules/user/hooks';
+import { ThemeToggle } from '@/shared/components/app/theme-toggle';
 import { useParams } from 'react-router-dom';
 
 /**
@@ -13,6 +14,7 @@ export default function UserPage() {
     <main>
       <section className="flex h-screen w-full items-center justify-center">
         <h1>User {userId}</h1>
+        <ThemeToggle />
       </section>
     </main>
   );
