@@ -7,21 +7,22 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlmodel import Session, select
 
 from src.auth.models import User
-from src.auth.schemas import LoginOutput
+from src.auth.schemas import AuthOutput, RegisterInput
 from src.auth.utils import HashHandler, JWTHandler
 from src.dependencies import get_session
+from sqlalchemy.exc import IntegrityError
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/generate-token")
 
 
-@router.post("/generate-token", response_model=LoginOutput)
+@router.post("/generate-token", response_model=AuthOutput)
 def login(
     *,
     session: Session = Depends(get_session),
     user_credentials: Annotated[OAuth2PasswordRequestForm, Depends()]
-) -> LoginOutput:
+) -> AuthOutput:
     """
     Generates a token for the user
 
@@ -34,7 +35,7 @@ def login(
 
     Returns
     -------
-    LoginOutput
+    AuthOutput
         The user id and the access token
 
     Raises
@@ -57,7 +58,55 @@ def login(
 
     user_id = user.id.__str__()
 
-    response = LoginOutput(
+    response = AuthOutput(
+        user_id=user_id,
+        access_token=JWTHandler.generate_token({"sub": user_id}),
+    )
+
+    return response
+
+
+@router.post("/register", response_model=AuthOutput, status_code=201)
+def register(
+    *, session: Session = Depends(get_session), user_data: RegisterInput
+) -> AuthOutput:
+    """
+    Registers a new user and generates a token for them
+
+    Parameters
+    ----------
+    session : Session
+        The database session
+    user_data : RegisterInput
+        The user data
+
+    Returns
+    -------
+    AuthOutput
+        The user id and the access token
+
+    Raises
+    ------
+    HTTPException
+        If the email already exists
+    """
+
+    EMAIL_ALREADY_EXISTS_ERROR_MSG = "Email already exists"
+
+    user_data.password = HashHandler.hash(user_data.password)
+
+    user = User.model_validate(user_data)
+
+    session.add(user)
+
+    try:
+        session.commit()
+    except IntegrityError:
+        raise HTTPException(status_code=409, detail=EMAIL_ALREADY_EXISTS_ERROR_MSG)
+
+    user_id = user.id.__str__()
+
+    response = AuthOutput(
         user_id=user_id,
         access_token=JWTHandler.generate_token({"sub": user_id}),
     )

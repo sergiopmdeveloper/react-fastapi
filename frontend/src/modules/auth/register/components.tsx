@@ -1,6 +1,6 @@
-import { UserLoginSchema } from '@/modules/auth/login/schemas';
-import { login } from '@/modules/auth/login/services';
-import { type UserLoginData } from '@/modules/auth/login/types';
+import { UserRegisterSchema } from '@/modules/auth/register/schemas';
+import { register } from '@/modules/auth/register/services';
+import { UserRegisterData } from '@/modules/auth/register/types';
 import { sessionAtom } from '@/modules/auth/states';
 import { Button } from '@/shared/components/ui/button';
 import {
@@ -16,27 +16,25 @@ import { Input } from '@/shared/components/ui/input';
 import { type ResponseError } from '@/shared/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
-import { AxiosError } from 'axios';
+import { type AxiosError } from 'axios';
 import { useAtom } from 'jotai';
 import { Loader2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 /**
- * Login form component
+ * Register form component
  */
-export function LoginForm() {
+export function RegisterForm() {
   const [_, setSession] = useAtom(sessionAtom);
   const navigate = useNavigate();
-  const [loginError, setLoginError] = useState<string | undefined>(undefined);
-  const [forbiddenMessage, setForbiddenMessage] = useState<string | undefined>(
+  const [registerError, setRegisterError] = useState<string | undefined>(
     undefined
   );
-  const location = useLocation();
 
-  const { mutate: loginHandler, isPending } = useMutation({
-    mutationFn: login,
+  const { mutate: registerHandler, isPending } = useMutation({
+    mutationFn: register,
     onSuccess: (response) => {
       const userId = response.data.user_id;
       const accessToken = response.data.access_token;
@@ -46,50 +44,55 @@ export function LoginForm() {
       navigate(`/user/${userId}`);
     },
     onError: (error: AxiosError<ResponseError>) => {
-      setLoginError(error.response?.data.detail);
+      setRegisterError(error.response?.data.detail);
     },
   });
 
-  const form = useForm<UserLoginData>({
-    resolver: zodResolver(UserLoginSchema),
+  const form = useForm<UserRegisterData>({
+    resolver: zodResolver(UserRegisterSchema),
     defaultValues: {
+      name: '',
       email: '',
       password: '',
     },
   });
 
   /**
-   * Login form submit handler
-   * @param {UserLoginData} userLoginData - The user login data
+   * Register form submit handler
+   * @param {UserRegisterData} userRegisterData - The user register data
    */
-  function onSubmit(userLoginData: UserLoginData) {
-    loginHandler(userLoginData);
+  function onSubmit(userRegisterData: UserRegisterData) {
+    registerHandler(userRegisterData);
   }
-
-  useEffect(() => {
-    const searchParams = new URLSearchParams(location.search);
-    const next = searchParams.get('next');
-
-    if (next === 'forbidden') {
-      setForbiddenMessage('Login first in your account');
-
-      searchParams.delete('next');
-
-      navigate({ search: searchParams.toString() }, { replace: true });
-
-      setTimeout(() => {
-        setForbiddenMessage(undefined);
-      }, 3000);
-    }
-  }, []);
 
   return (
     <div className="relative w-[30rem] rounded-md border bg-card p-6 shadow">
-      <h1 className="text-3xl font-bold">Login</h1>
+      <h1 className="text-3xl font-bold">Register</h1>
 
       <Form {...form}>
         <form className="mt-8" onSubmit={form.handleSubmit(onSubmit)}>
           <div className="space-y-4">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name</FormLabel>
+
+                  <FormControl>
+                    <Input
+                      placeholder="Your name..."
+                      autoComplete="name"
+                      {...field}
+                    />
+                  </FormControl>
+
+                  <FormDescription>What is your name?</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <FormField
               control={form.control}
               name="email"
@@ -105,7 +108,7 @@ export function LoginForm() {
                     />
                   </FormControl>
 
-                  <FormDescription>The email of your account.</FormDescription>
+                  <FormDescription>What is your email?</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -127,9 +130,7 @@ export function LoginForm() {
                     />
                   </FormControl>
 
-                  <FormDescription>
-                    The password of your account.
-                  </FormDescription>
+                  <FormDescription>What will be your password?</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -137,9 +138,9 @@ export function LoginForm() {
           </div>
 
           <p className="mt-8 text-sm">
-            Don't have an account?{' '}
-            <Link to="/auth/register" className="text-blue-500 underline">
-              Register
+            Already have an account?{' '}
+            <Link to="/auth/login" className="text-blue-500 underline">
+              Login
             </Link>
           </p>
 
@@ -150,15 +151,9 @@ export function LoginForm() {
         </form>
       </Form>
 
-      {loginError && (
+      {registerError && (
         <p className="absolute -top-8 right-0 rounded-md bg-red-200 px-1.5 py-0.5 text-xs text-red-500">
-          {loginError}
-        </p>
-      )}
-
-      {forbiddenMessage && (
-        <p className="absolute -top-8 right-0 rounded-md bg-red-200 px-1.5 py-0.5 text-xs text-red-500">
-          {forbiddenMessage}
+          {registerError}
         </p>
       )}
     </div>
