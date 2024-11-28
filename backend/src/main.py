@@ -7,6 +7,7 @@ from fastapi.responses import RedirectResponse
 
 from src.auth.router import router as auth_router
 from src.database import create_db_and_tables
+from src.user.router import router as user_router
 
 
 @asynccontextmanager
@@ -41,6 +42,7 @@ def init_app() -> FastAPI:
     app = FastAPI(lifespan=lifespan)
 
     app.include_router(auth_router)
+    app.include_router(user_router)
 
     app.add_middleware(
         CORSMiddleware,
