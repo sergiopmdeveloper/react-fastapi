@@ -36,5 +36,6 @@ def get_user(
     statement = select(User).where(User.id == user_id)
     results = session.exec(statement)
     user = results.first()
+    user.password = None
 
     return user
