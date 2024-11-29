@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends
 from sqlmodel import Session, select
 
 from src.auth.models import User
-from src.auth.router import oauth2_scheme
+from src.auth.router import oauth2_scheme, validate_session
 from src.dependencies import get_session
 
 router = APIRouter(prefix="/user", tags=["user"])
@@ -14,7 +14,7 @@ router = APIRouter(prefix="/user", tags=["user"])
 def get_user(
     *,
     session: Session = Depends(get_session),
-    _: str = Depends(oauth2_scheme),
+    token: str = Depends(oauth2_scheme),
     user_id: UUID
 ) -> User:
     """
@@ -24,6 +24,8 @@ def get_user(
     ----------
     session : Session
         The database session
+    token : str
+        The access token
     user_id : UUID
         The user id
 
@@ -32,6 +34,8 @@ def get_user(
     User
         The user
     """
+
+    validate_session(token=token, user_id=str(user_id))
 
     statement = select(User).where(User.id == user_id)
     results = session.exec(statement)
