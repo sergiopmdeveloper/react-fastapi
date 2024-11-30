@@ -2,7 +2,8 @@ import useAuth from '@/modules/auth/hooks';
 import { getSessionToken } from '@/modules/auth/utils';
 import useValidateUserId from '@/modules/user/hooks';
 import getUser from '@/modules/user/services';
-import { ThemeToggle } from '@/shared/components/app/theme-toggle';
+import Header from '@/shared/components/app/header';
+import { Section } from '@/shared/components/app/section-layout';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
@@ -24,12 +25,14 @@ export default function UserPage() {
   });
 
   return (
-    <main>
-      <section className="flex h-screen w-full flex-col items-center justify-center">
-        <h1>{query.data?.name}</h1>
-        <h1>{query.data?.email}</h1>
-        <ThemeToggle />
-      </section>
-    </main>
+    <div className="w-full">
+      <Header />
+
+      <Section>
+        <h1 className="text-xl">
+          Welcome back <strong>{query.data?.name}</strong>
+        </h1>
+      </Section>
+    </div>
   );
 }
